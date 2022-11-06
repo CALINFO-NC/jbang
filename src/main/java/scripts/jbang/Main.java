@@ -9,6 +9,7 @@
 //SOURCES ./Console.java
 
 //SOURCES psud/DockerPostgresCreate.java
+//SOURCES psud/DockerPostgresCopy.java
 
 package scripts.jbang;
 
