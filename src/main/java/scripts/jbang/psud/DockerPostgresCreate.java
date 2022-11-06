@@ -1,8 +1,8 @@
-//SOURCES ../../CommandUtils.java
-//SOURCES ../../Console.java
-//SOURCES ../../Script.java
+//SOURCES ../CommandUtils.java
+//SOURCES ../Console.java
+//SOURCES ../Script.java
 
-package scripts.jbang.docker.psud;
+package scripts.jbang.psud;
 
 import scripts.jbang.CommandUtils;
 import scripts.jbang.Console;

@@ -4,7 +4,11 @@
 //DEPS org.apache.commons:commons-lang3:3.12.0
 //DEPS org.reflections:reflections:0.10.2
 
-//SOURCES docker/psud/DockerPostgresCreate.java
+//SOURCES ./Script.java
+//SOURCES ./CommandUtils.java
+//SOURCES ./Console.java
+
+//SOURCES psud/DockerPostgresCreate.java
 
 package scripts.jbang;
 
