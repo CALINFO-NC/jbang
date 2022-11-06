@@ -17,18 +17,18 @@ public class DockerPostgresCopy implements Script {
     @Override
     public void execute(String[] args) throws Exception {
 
-        Console.println("Ce script va copier une base de données d'un environnement PSud ver un autre environnent", Console.TITLE);
+        Console.println("Ce script va copier une base de données d'un environnement PSud vers un autre environnent", Console.TITLE);
 
-        String container = CommandUtils.readConsoleValue(Console.getColoredMessage("Nom du container container sur lequel un postgreSql est installé : ", Console.DEFAULT));
+        String container = CommandUtils.readConsoleValue(Console.getColoredMessage("Nom du container sur lequel un postgreSql est installé : ", Console.DEFAULT));
         String hostSrc = CommandUtils.readConsoleValue(Console.getColoredMessage("Nom DNS ou IP de la base de données source (par défaut pgsql1-qualif.province-sud.qualif) : ", Console.DEFAULT), "pgsql1-qualif.province-sud.qualif");
         String portSrc = CommandUtils.readConsoleValue(Console.getColoredMessage("Port d'accès à la base de données source (par défaut 5432) : ", Console.DEFAULT), "5432");
         String databaseNameSrc = CommandUtils.readConsoleValue(Console.getColoredMessage("Nom de la base de données source : ", Console.DEFAULT));
 
         String hostDst = CommandUtils.readConsoleValue(Console.getColoredMessage("Nom DNS ou IP de la base de données de destination (par défaut localhost) : ", Console.DEFAULT), "localhost");
-        String portDst = CommandUtils.readConsoleValue(Console.getColoredMessage("Port d'accès à la base de données source (par défaut 5432) : ", Console.DEFAULT), "5432");
-        String databaseNameDst = CommandUtils.readConsoleValue(Console.getColoredMessage(String.format("Nom de la base de données source (par défaut %s) : ", databaseNameSrc), Console.DEFAULT), databaseNameSrc);
+        String portDst = CommandUtils.readConsoleValue(Console.getColoredMessage("Port d'accès à la base de données de destination (par défaut 5432) : ", Console.DEFAULT), "5432");
+        String databaseNameDst = CommandUtils.readConsoleValue(Console.getColoredMessage(String.format("Nom de la base de données de destination (par défaut %s) : ", databaseNameSrc), Console.DEFAULT), databaseNameSrc);
 
-        String bolb = CommandUtils.readConsoleValue(Console.getColoredMessage("Souhaitez vous copier les blob oui/non (oui par défaut) : ", Console.DEFAULT), "oui");
+        String bolb = CommandUtils.readConsoleValue(Console.getColoredMessage("Souhaitez vous copier les blobs oui/non (oui par défaut) : ", Console.DEFAULT), "oui");
 
         String filaName = "/tmp/bud-" + System.nanoTime() + ".backup";
 

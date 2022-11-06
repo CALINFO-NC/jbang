@@ -14,6 +14,7 @@
 package scripts.jbang;
 
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
@@ -38,16 +39,15 @@ public class Main {
 
         while (!startScript.equals("exit")) {
             System.out.println();
-            Console.print("Quel script souhaitez vous lancer (\"exit\" pour sortir \"list\" pour lister les scripts) :", ConsoleColor.BLACK_UNDERLINED);
+            Console.print("Quel script souhaitez vous lancer (\"exit\" pour sortir \"list *\" pour lister les scripts) :", ConsoleColor.BLACK_UNDERLINED);
             startScript = CommandUtils.readConsoleValue(" ");
 
             if (startScript.equals("exit")){
                 break;
             }
 
-            if (startScript.equals("list")){
-                Console.println("Liste des script disponnibles : " , Console.SUCCESS);
-                scripts.entrySet().forEach(e -> Console.println("    - " + e.getKey(), Console.SUCCESS));
+            if (startScript.startsWith("list ")){
+                printListScript(startScript.replace("list ", ""));
                 continue;
             }
 
@@ -93,5 +93,26 @@ public class Main {
         e.printStackTrace(pw);
 
         return sw.toString();
+    }
+
+    private static void printListScript(String fullText){
+        final String[] filters = fullText.split("\\*");
+        Console.println("Liste des scripts disponnibles : " , Console.SUCCESS);
+        scripts.entrySet().stream().filter(e -> {
+
+            for(String filter : filters){
+                if (StringUtils.isBlank(filter.trim())){
+                    continue;
+                }
+
+                if (!e.getKey().contains(filter)){
+                    return false;
+                }
+            }
+
+            return true;
+
+        }).forEach(e -> Console.println("    - " + e.getKey(), Console.SUCCESS));
+
     }
 }
