@@ -3,6 +3,7 @@
 //DEPS org.projectlombok:lombok:1.18.24
 //DEPS org.apache.commons:commons-lang3:3.12.0
 //DEPS org.reflections:reflections:0.10.2
+//DEPS info.picocli:picocli:4.7.0
 
 //SOURCES ./Script.java
 //SOURCES ./CommandUtils.java
@@ -17,6 +18,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
+import picocli.CommandLine;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -24,14 +26,28 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-public class Main {
+@CommandLine.Command(mixinStandardHelpOptions = true,  description = "Commande JBang")
+public class Main implements Callable<Integer> {
+
+    @CommandLine.Option(names = {"--no-color"}, description = "Désactiver la couleur de la console")
+    private boolean noColor = false;
 
     private static Map<String, Script> scripts = new HashMap<>();
 
-    @SneakyThrows
-    public static void main(String[] args) {
+
+    String[] args = null;
+
+    public Main(String... args){
+        this.args = args;
+    }
+
+    @Override
+    public Integer call() throws Exception {
+
+        Console.PROMPT_COLOR = !noColor;
 
         initScripts();
 
@@ -67,6 +83,13 @@ public class Main {
         }
 
         Console.println("Aurevoir !", Console.SUCCESS);
+
+        return 0;
+    }
+
+    public static void main(String... args) {
+        int exitCode = new CommandLine(new Main(args)).execute(args);
+        System.exit(exitCode);
     }
 
     @SneakyThrows

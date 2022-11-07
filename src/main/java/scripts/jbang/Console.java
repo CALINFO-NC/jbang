@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Console {
 
+
+    public static boolean PROMPT_COLOR = true;
+
     public static ConsoleColor TITLE = ConsoleColor.BLACK_BOLD;
     public static ConsoleColor DEFAULT = ConsoleColor.DEFAULT;
     public static ConsoleColor FAILURE = ConsoleColor.RED;
@@ -19,18 +22,29 @@ public class Console {
     public static ConsoleColor LOG_ERROR = ConsoleColor.RED_BRIGHT;
 
     public static void print(String message, ConsoleColor consoleColor){
-        System.out.print(String.format("%s%s%s", computeColor(consoleColor), message, ConsoleColor.RESET));
+        System.out.print(getColoredMessage(message, consoleColor));
     }
 
     public static void println(String message, ConsoleColor consoleColor){
-        System.out.println(String.format("%s%s%s", computeColor(consoleColor), message, ConsoleColor.RESET));
+        System.out.println(getColoredMessage(message, consoleColor));
     }
 
     public static String getColoredMessage(String message, ConsoleColor consoleColor){
-        return String.format("%s%s%s", computeColor(consoleColor), message, ConsoleColor.RESET);
+
+        if (PROMPT_COLOR) {
+            return String.format("%s%s%s", computeColor(consoleColor), message, ConsoleColor.RESET);
+        }
+        else{
+            return message;
+        }
     }
 
     private static String computeColor(ConsoleColor... consoleColor){
-        return Arrays.stream(consoleColor).map(ConsoleColor::toString).collect(Collectors.joining());
+
+        if (PROMPT_COLOR)
+            return Arrays.stream(consoleColor).map(ConsoleColor::toString).collect(Collectors.joining());
+        else{
+            return Arrays.stream(consoleColor).map(ConsoleColor::toString).collect(Collectors.joining());
+        }
     }
 }
