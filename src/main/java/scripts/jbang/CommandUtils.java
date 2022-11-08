@@ -2,30 +2,22 @@ package scripts.jbang;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommandUtils {
 
-    public static String readConsoleValue(String message) throws Exception{
-        return readConsoleValue(message, "");
-    }
+    public static void executeCommand(String[] commandNonFormate) throws IOException {
 
-    public static String readConsoleValue(String message, String defaultValue) throws IOException {
 
-        System.out.print(message);
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String result = reader.readLine();
-
-        return StringUtils.isBlank(result) ? defaultValue : result;
-    }
-
-    public static void executeCommand(String[] command) throws IOException {
+        List<String> lstCommand = Arrays.stream(commandNonFormate).map(i -> String.format("%s", i)).collect(Collectors.toList());
+        String[] command = lstCommand.toArray(new String[0]);
 
         Console.println(String.format("$> %s", String.join(" ", command)), Console.LOG_DEBUG);
 
@@ -38,7 +30,7 @@ public class CommandUtils {
 
             // read the output from the command
             while ((s = stdInput.readLine()) != null) {
-                Console.println(s, Console.LOG_DEBUG);
+                Console.println(s, Console.LOG_SUCCESS);
             }
 
             // read any errors from the attempted command
