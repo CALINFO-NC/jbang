@@ -1,6 +1,7 @@
 //SOURCES ../CommandUtils.java
 //SOURCES ../Console.java
 //SOURCES ../ScriptCallable.java
+//SOURCES ../ScriptCommand.java
 
 package scripts.jbang.psud;
 

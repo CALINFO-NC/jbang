@@ -5,12 +5,14 @@
 //DEPS org.reflections:reflections:0.10.2
 //DEPS info.picocli:picocli:4.7.0
 //DEPS org.fusesource.jansi:jansi:2.4.0
+//DEPS org.apache.commons:commons-text:1.12.0
 
 //SOURCES ./CommandUtils.java
 //SOURCES ./Console.java
 
 //SOURCES ./psud/DockerPostgresCreate.java
 //SOURCES ./psud/DockerPostgresCopy.java
+//SOURCES ./service/ServiceCrudCreate.java
 
 package scripts.jbang;
 
@@ -21,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import picocli.CommandLine;
 import scripts.jbang.psud.DockerPostgresCopy;
 import scripts.jbang.psud.DockerPostgresCreate;
+import scripts.jbang.service.ServiceCrudCreate;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.Callable;
@@ -29,7 +32,8 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "", mixinStandardHelpOptions = true, version = "1.0.0",
         subcommands = {
                 DockerPostgresCopy.class,
-                DockerPostgresCreate.class
+                DockerPostgresCreate.class,
+                ServiceCrudCreate.class
 })
 public class ScriptCommand implements Callable<Integer> {
 
