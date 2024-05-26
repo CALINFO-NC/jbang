@@ -6,6 +6,8 @@
 //DEPS info.picocli:picocli:4.7.0
 //DEPS org.fusesource.jansi:jansi:2.4.0
 //DEPS org.apache.commons:commons-text:1.12.0
+//DEPS org.apache.velocity:velocity-engine-core:2.3
+//DEPS commons-io:commons-io:2.16.1
 
 //SOURCES ./CommandUtils.java
 //SOURCES ./Console.java
@@ -13,6 +15,8 @@
 //SOURCES ./psud/DockerPostgresCreate.java
 //SOURCES ./psud/DockerPostgresCopy.java
 //SOURCES ./service/ServiceCrudCreate.java
+//SOURCES ./service/FieldProperty.java
+//SOURCES ./service/ClassPropertiesUtils.java
 
 package scripts.jbang;
 
