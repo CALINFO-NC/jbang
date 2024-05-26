@@ -1,0 +1,92 @@
+#set($variable = ${className})
+#set($firstLetter = ${variable.substring(0, 1).toLowerCase()})
+#set($restOfString = ${variable.substring(1)})
+#set($variableName = "${firstLetter}${restOfString}")
+
+package ${pkg};
+
+import com.calinfo.api.${projectName.toLowerCase()}.core.dto.query.FullText;
+import com.calinfo.api.${projectName.toLowerCase()}.core.entity.RsqlSpecification;
+import com.calinfo.api.${projectName.toLowerCase()}.core.utils.PaginationUtils;
+import com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.${className}Resource;
+import com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.${className}Service;
+import com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.entity.${tenant}.${className}Entity;
+import com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.repository.${tenant}.${className}Repository;
+import com.calinfo.api.common.converter.AbstractConvertManager;
+import com.calinfo.api.common.domain.DomainDatasourceConfiguration;
+import com.calinfo.api.common.dto.DynamicListDto;
+import com.calinfo.api.common.dto.MultiSorter;
+import com.calinfo.api.common.dto.PageInfoDto;
+import com.calinfo.api.common.spring.PageInfoPageRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+
+@RequiredArgsConstructor
+@Service
+@Transactional(propagation = Propagation.REQUIRED, transactionManager = DomainDatasourceConfiguration.TRANSACTION_MANAGER_REF)
+public class ${className}ServiceImpl implements ${className}Service {
+
+    private final AbstractConvertManager convertManager;
+    private final ${className}Repository ${variableName}Repository;
+
+    @Override
+    public ${className}Resource create(@NotNull @Valid ${className}Resource ${variableName}Resource) {
+
+        ${className}Entity ${variableName}Entity = convertManager.convert(${variableName}Resource, new ${className}Entity());
+        ${variableName}Entity = ${variableName}Repository.save(${variableName}Entity);
+
+        return read(${variableName}Entity.getId());
+    }
+
+
+    @Override
+    public ${className}Resource read(@NotNull Long id) {
+
+        ${className}Entity ${variableName}Entity = ${variableName}Repository.findById(id).orElseThrow();
+
+        return convertManager.convert(${variableName}Entity, new ${className}Resource());
+    }
+
+    @Override
+    public ${className}Resource update(@NotNull Long id, @NotNull @Valid ${className}Resource ${variableName}Resource) {
+
+        ${className}Entity ${variableName}Entity = ${variableName}Repository.findById(id).orElseThrow();
+        ${variableName}Entity = convertManager.convert(${variableName}Resource, ${variableName}Entity);
+        ${variableName}Entity = ${variableName}Repository.save(${variableName}Entity);
+
+        return read(${variableName}Entity.getId());
+    }
+
+    @Override
+    public void delete(@NotNull Long id) {
+
+        ${className}Entity ${variableName}Entity = ${variableName}Repository.findById(id).orElseThrow();
+        ${variableName}Repository.delete(${variableName}Entity);
+    }
+
+    @Override
+    public DynamicListDto<${className}Resource> list(@NotNull PageInfoDto pageInfoDto, @NotNull MultiSorter multiSorter, String query) {
+
+        PageInfoDto ci = PaginationUtils.setMaxPaginationItem(pageInfoDto);
+        PageInfoPageRequest pageRequest = new PageInfoPageRequest(ci, PaginationUtils.convertSortParam(multiSorter));
+        RsqlSpecification<${className}Entity> rsqlSpecification = new RsqlSpecification<>(query, ${className}Entity.class, convertManager);
+        Page<${className}Entity> page = ${variableName}Repository.findAll(rsqlSpecification, pageRequest);
+
+        return new DynamicListDto<>(convertManager.toFunction(${className}Resource.class), page);
+    }
+
+    @Override
+    public DynamicListDto<${className}Resource> lookup(@NotNull PageInfoDto pageInfoDto, @NotNull MultiSorter multiSorter, String fulltextQuery) {
+
+        FullText fullText = new FullText(${className}Resource.class, fulltextQuery);
+        String query = convertManager.convert(fullText, String.class);
+
+        return list(pageInfoDto, multiSorter, query);
+    }
+}

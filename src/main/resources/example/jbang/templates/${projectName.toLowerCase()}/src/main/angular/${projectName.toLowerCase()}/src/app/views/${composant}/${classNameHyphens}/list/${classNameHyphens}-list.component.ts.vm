@@ -1,0 +1,113 @@
+#set($variable = ${className})
+#set($firstLetter = ${variable.substring(0, 1).toLowerCase()})
+#set($restOfString = ${variable.substring(1)})
+#set($variableName = "${firstLetter}${restOfString}")
+
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {Table, TableLazyLoadEvent} from "primeng/table";
+import {AppConfig} from "@app/app.config";
+import {ConfirmationService, MessageService, TableState} from "primeng/api";
+import {TableFilterHelper} from "@core/utils/table-filter.helper";
+import {ActivatedRoute, Router} from "@angular/router";
+import {${className}Service} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.service";
+import {${className}Model} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.model";
+
+@Component({
+    selector: 'app-${classNameHyphens}-list',
+    templateUrl: './${classNameHyphens}-list.component.html',
+    styleUrls: ['./${classNameHyphens}-list.component.scss']
+})
+export class ${className}ListComponent implements AfterViewInit {
+
+    @ViewChild('globalSearch') globalSearch: ElementRef;
+    globalSearchToRestore: string;
+    defaultRowsPerPage = AppConfig.defaultRowsPerPage;
+    loading = false;
+    totalRecords: number;
+    data: any[];
+    protected readonly TableFilterHelper = TableFilterHelper;
+    private forwardedMessage: any;
+    private lastLoadEvent: string;
+
+    constructor(private ${variableName}Service: ${className}Service,
+                private messageService: MessageService,
+                private router: Router,
+                private confirmationService: ConfirmationService,
+                private route: ActivatedRoute,
+    ) {
+        this.forwardedMessage = this.router.getCurrentNavigation()?.extras?.state?.forwardedMessage;
+    }
+
+    ngAfterViewInit(): void {
+        if (this.forwardedMessage) {
+            this.messageService.add(this.forwardedMessage);
+            this.forwardedMessage = null;
+        }
+        this.globalSearch.nativeElement.value = this.globalSearchToRestore ?? "";
+    }
+
+    loadData(event: TableLazyLoadEvent) {
+        this.lastLoadEvent = JSON.stringify(event);
+
+        const filters = event.filters ?? {};
+
+        const req = this.${variableName}Service.list(event.first, event.rows ? event.rows : this.defaultRowsPerPage, filters, event.sortField, event.sortOrder);
+
+        this.loading = true;
+        req.subscribe({
+            next: value => {
+                this.totalRecords = value.count;
+                this.data = value.data;
+                this.loading = false;
+            }, error: () => {
+                this.loading = false;
+            }
+        });
+    }
+
+    goTo${className}(${variableName}: ${className}Model) {
+        this.router.navigate(['${variableName}s', ${variableName}.id]);
+    }
+
+    onDelete(event: Event, ${variableName}: ${className}Model) {
+
+        this.confirmationService.confirm({
+            target: event.target || undefined,
+            key: "confirmPopup",
+            message: "Êtes-vous sûr de vouloir effectuer cette suppression ?",
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: "Supprimer",
+            acceptButtonStyleClass: "p-button-danger",
+            rejectLabel: "Annuler",
+            rejectButtonStyleClass: "p-button-outlined",
+            accept: () => {
+
+                this.${variableName}Service.delete(${variableName}.id).subscribe(() => {
+                    this.reload();
+                });
+            },
+        });
+    }
+
+    handleStateRestore(tableState: TableState) {
+        this.globalSearchToRestore = (tableState?.filters?.global as any)?.value;
+    }
+
+    clearFilters(dt: Table) {
+        this.globalSearch.nativeElement.value = "";
+        delete dt.filters['global'];
+        dt.clear();
+    }
+
+    /**
+     * Recharge la grille sans changer les filtres/tries
+     */
+    reload() {
+        if (this.lastLoadEvent != null) {
+            const loadEvent = JSON.parse(this.lastLoadEvent);
+            this.lastLoadEvent = null;
+            this.loadData(loadEvent);
+        }
+    }
+
+}

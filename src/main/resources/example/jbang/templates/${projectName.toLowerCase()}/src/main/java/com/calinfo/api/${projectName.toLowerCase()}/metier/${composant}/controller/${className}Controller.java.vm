@@ -1,0 +1,52 @@
+package ${pkg};
+
+import com.calinfo.api.${projectName.toLowerCase()}.core.controller.*;
+import com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.${className}Resource;
+import com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.${className}Service;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.experimental.Delegate;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RequestMapping({"${${projectName.toLowerCase()}-api.baseUrl:}/api/v1/private/${endPointUrl}"})
+@RestController
+@Tag(name = "${className}", description = "<div class='open-api-tag-description'/>")
+public class ${className}Controller implements
+            CreateController<${className}Resource>,
+            UpdateController<${className}Resource, Long>,
+            DeleteController<Long>,
+            ReadController<${className}Resource, Long>,
+            ListController<${className}Resource>,
+            LookupController<${className}Resource> {
+
+                @Delegate
+                private final CreateController<${className}Resource> createController;
+
+                @Delegate
+                private final UpdateController<${className}Resource, Long> updateController;
+
+                @Delegate
+                private final DeleteController<Long> deleteController;
+
+                @Delegate
+                private final ListController<${className}Resource> listController;
+
+                @Delegate
+                private final ReadController<${className}Resource, Long> readController;
+
+                @Delegate
+                private final LookupController<${className}Resource> lookupController;
+
+                public ${className}Controller(${className}Service service) {
+                    this.createController = new DefaultCreateController<>(service);
+                    this.updateController = new DefaultUpdateController<>(service);
+                    this.deleteController = new DefaultDeleteController<>(service);
+                    this.readController = new DefaultReadController<>(service);
+                    this.listController = new DefaultListController<>(service);
+                    this.lookupController = new DefaultLookupController<>(service);
+                }
+}
+
+

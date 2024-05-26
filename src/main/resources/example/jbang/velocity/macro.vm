@@ -1,0 +1,27 @@
+#macro(convertToAngularHtmlType $javaType)
+    #set($stringType = "String")
+    #set($numberTypes = ["Integer", "Long", "BigDecimal", "Float", "Double", "float", "double", "int"])
+    #set($dateTypes = ["ZonedDateTime", "Date", "LocalDateTime", "LocalDate"])
+    #set($booleanTypes = ["Boolean", "boolean"])
+    #if($javaType == $stringType)text##
+    #elseif($numberTypes.contains($javaType))number##
+    #elseif($dateTypes.contains($javaType))date##
+    #elseif($booleanTypes.contains($javaType))checkbox##
+    #else##
+    null##
+    #end
+#end
+
+#macro(convertToAngularMatcherType $javaType)
+    #set($stringType = "String")
+    #set($numberTypes = ["Integer", "Long", "BigDecimal", "Float", "Double", "float", "double", "int"])
+    #set($dateTypes = ["ZonedDateTime", "Date", "LocalDateTime", "LocalDate"])
+    #set($booleanTypes = ["Boolean", "boolean"])
+    #if($javaType == $stringType)String##
+    #elseif($numberTypes.contains($javaType))Number##
+    #elseif($dateTypes.contains($javaType))Date##
+    #elseif($booleanTypes.contains($javaType))Boolean##
+    #else##
+    null##
+    #end
+#end

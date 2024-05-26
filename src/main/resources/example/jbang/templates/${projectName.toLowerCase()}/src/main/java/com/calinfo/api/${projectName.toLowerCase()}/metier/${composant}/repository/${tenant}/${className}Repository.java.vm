@@ -1,0 +1,9 @@
+package ${pkg};
+
+import com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.entity.${tenant}.${className}Entity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+public interface ${className}Repository extends JpaRepository<${className}Entity, Long>, JpaSpecificationExecutor<${className}Entity> {
+
+}

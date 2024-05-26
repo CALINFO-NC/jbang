@@ -1,0 +1,10 @@
+package ${pkg};
+
+import com.calinfo.api.${projectName.toLowerCase()}.core.service.CrudService;
+import com.calinfo.api.common.service.ListService;
+import com.calinfo.api.common.service.LookupService;
+import org.springframework.validation.annotation.Validated;
+
+@Validated
+public interface ${className}Service extends CrudService<${className}Resource, Long>, ListService<${className}Resource>, LookupService<${className}Resource> {
+}

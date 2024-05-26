@@ -8,10 +8,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "${tenant}_${classNameHyphens}")
+@Table(name = "${tenant}_${entityTableName}")
 public class ${className}Entity extends AbstractEntity {
 
-    #foreach(${property} in ${properties})
-        private ${property.getType().toString()} ${property.getName()};
+    #foreach(${field} in ${fields})
+        #if(${field.getTypeParam().isEmpty()})
+            private ${field.getType()} ${field.getName()};
+        #end
     #end
 }
+
+

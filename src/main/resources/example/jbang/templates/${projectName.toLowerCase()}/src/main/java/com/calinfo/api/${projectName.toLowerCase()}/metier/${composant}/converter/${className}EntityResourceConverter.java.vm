@@ -1,0 +1,44 @@
+package ${pkg};
+
+import com.calinfo.api.${projectName.toLowerCase()}.core.converter.BiDirectionelConverter;
+import com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.${className}Resource;
+import com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.entity.${tenant}.${className}Entity;
+
+public class ${className}EntityResourceConverter extends BiDirectionelConverter<${className}Entity, ${className}Resource> {
+
+    public ${className}EntityResourceConverter() {
+        super(${className}Entity.class, ${className}Resource.class);
+    }
+
+    @Override
+    protected ${className}Entity convertToE(${className}Resource source, ${className}Entity dest) {
+
+        #foreach(${field} in ${fields})
+            #set($fieldName = ${field.getName()})
+            #set($firstLetter = ${fieldName.substring(0, 1).toUpperCase()})
+            #set($restOfString = ${fieldName.substring(1)})
+            #set($capitalizedVariable = "${firstLetter}${restOfString}")
+            #if(${field.getTypeParam().isEmpty()})
+                dest.set${capitalizedVariable}(source.get${capitalizedVariable}());
+            #end
+        #end
+
+        return dest;
+    }
+
+    @Override
+    protected ${className}Resource convertToR(${className}Entity source, ${className}Resource dest) {
+
+        #foreach(${field} in ${fields})
+            #set($fieldName = ${field.getName()})
+            #set($firstLetter = ${fieldName.substring(0, 1).toUpperCase()})
+            #set($restOfString = ${fieldName.substring(1)})
+            #set($capitalizedVariable = "${firstLetter}${restOfString}")
+            #if(${field.getTypeParam().isEmpty()})
+                dest.set${capitalizedVariable}(source.get${capitalizedVariable}());
+            #end
+        #end
+
+        return dest;
+    }
+}

@@ -1,0 +1,27 @@
+#set($variable = ${className})
+#set($firstLetter = ${variable.substring(0, 1).toLowerCase()})
+#set($restOfString = ${variable.substring(1)})
+#set($variableName = "${firstLetter}${restOfString}")
+
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot} from '@angular/router';
+import {from, Observable} from "rxjs";
+import {${className}Service} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.service";
+import {${className}Model} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.model";
+
+@Injectable({
+providedIn: 'any'
+})
+export class ${className}Resolver implements Resolve<Observable<${className}Model | boolean>> {
+
+    constructor(private ${variableName}Service: ${className}Service, private router: Router) {
+    }
+
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Observable<${className}Model | boolean>> | Promise<Observable<${className}Model | boolean>> | Observable<${className}Model | boolean> {
+        if (!route.params['${variableName}Id'] || isNaN(route.params['${variableName}Id']))
+        return from(this.router.navigate(['/']));
+
+        return this.${variableName}Service.read(parseInt(route.params['${variableName}Id']));
+    }
+
+}

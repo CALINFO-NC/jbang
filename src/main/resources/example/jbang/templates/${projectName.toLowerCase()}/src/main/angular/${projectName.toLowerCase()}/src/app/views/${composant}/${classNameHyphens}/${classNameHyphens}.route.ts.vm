@@ -1,0 +1,32 @@
+#set($variable = ${className})
+#set($firstLetter = ${variable.substring(0, 1).toLowerCase()})
+#set($restOfString = ${variable.substring(1)})
+#set($variableName = "${firstLetter}${restOfString}")
+
+import {Routes} from '@angular/router';
+import {AuthGuard} from "@app/services/security/auth-guard";
+import {${className}ListComponent} from "@app/views/${composant.replace(".", "/")}/${classNameHyphens}/list/${classNameHyphens}-list.component";
+import {ConfirmBeforeDeactivateGuard} from "@app/services/security/confirm-before-deactivate-guard";
+import {${className}FormComponent} from "@app/views/${composant.replace(".", "/")}/${classNameHyphens}/form/${classNameHyphens}-form.component";
+import {${className}Resolver} from "@app/views/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.resolver";
+
+const routes: Routes = [
+    {
+        path: '', component: ${className}ListComponent,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: 'new', component: ${className}FormComponent,
+        data: {breadcrumb: 'Nouveau'},
+        canActivate: [AuthGuard],
+        canDeactivate: [ConfirmBeforeDeactivateGuard]
+    },
+    {
+        path: ':${variableName}Id',
+        data: {breadcrumb: 'Détail'},
+        component: ${className}FormComponent,
+        resolve: {${variableName}: ${className}Resolver},
+        canActivate: [AuthGuard],
+        canDeactivate: [ConfirmBeforeDeactivateGuard]
+    }
+];

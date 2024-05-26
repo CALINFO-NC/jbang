@@ -1,0 +1,157 @@
+#set($variable = ${className})
+#set($firstLetter = ${variable.substring(0, 1).toLowerCase()})
+#set($restOfString = ${variable.substring(1)})
+#set($variableName = "${firstLetter}${restOfString}")
+
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {AppConfig, MessageCode} from "@app/app.config";
+import {Observable} from "rxjs";
+import {ActivatedRoute, Router} from "@angular/router";
+import {ConfirmBeforeDeactivateComponent} from "@core/confirm-before-deactivate-guard";
+import {ConfirmationService, MessageService} from "primeng/api";
+import {${className}Service} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.service";
+import {${className}Model} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.model";
+
+@Component({
+    selector: 'app-${classNameHyphens}-form',
+    templateUrl: './${classNameHyphens}-form.component.html',
+    styleUrls: ['./${classNameHyphens}-form.component.scss']
+})
+export class ${className}FormComponent implements OnInit, ConfirmBeforeDeactivateComponent {
+    ERR_CHAMP_OBLIGATOIRE = AppConfig.getMessage(MessageCode.ERR_CHAMP_OBLIGATOIRE);
+        ${variableName}Form: FormGroup;
+    loaded${className}: ${className}Model;
+    forceExit = false;
+    processing = false;
+    private readonly currentYear = new Date().getFullYear();
+
+    constructor(private ${variableName}Service: ${className}Service,
+                private fb: FormBuilder,
+                private route: ActivatedRoute,
+                private router: Router,
+                protected confirmationService: ConfirmationService,
+                protected messageService: MessageService,
+    ) {
+
+        this.${variableName}Form = this.fb.group({
+            #foreach(${field} in ${fields})
+                #if(${field.getTypeParam().isEmpty()})
+                    ${field.getName()}: [null, Validators.required],
+                #end
+            #end
+        });
+    }
+
+    #foreach(${field} in ${fields})
+        #if(${field.getTypeParam().isEmpty()})
+            get ${field.getName()}Control(): FormControl {
+                return this.${variableName}Form.get('${field.getName()}') as FormControl;
+            }
+        #end
+    #end
+
+    ngOnInit() {
+        this.route.data.subscribe(value => {
+            this.loaded${className} = value['${variableName}'];
+            if (this.loaded${className})
+                this.updateView();
+        });
+    }
+
+    updateView() {
+        this.${variableName}Form.patchValue({
+            #foreach(${field} in ${fields})
+                #if(${field.getTypeParam().isEmpty()})
+                    ${field.getName()}: this.loaded${className}.${field.getName()},
+                #end
+            #end
+        });
+        this.${variableName}Form.markAsPristine();
+    }
+
+    goBack(event: MouseEvent) {
+        if (this.${variableName}Form.dirty) {
+            this.confirmationService.confirm({
+                target: event.target,
+                key: "confirmPopup",
+                message: this.getConfirmMessage(),
+                icon: 'pi pi-exclamation-triangle',
+                acceptLabel: "Confirmer",
+                rejectLabel: "Annuler",
+                accept: () => {
+                    this.forceExit = true;
+                    this.router.navigate([`/${variableName}s`]);
+                }
+            });
+        } else {
+            this.router.navigate([`/${variableName}s`]);
+        }
+    }
+
+    // validation custom du formulaire par rapport aux pièces jointes
+    isFormValid() {
+        return this.${variableName}Form.valid;
+    }
+
+    save(exit?: boolean) {
+        if (this.isFormValid()) {
+
+            const formData = this.${variableName}Form.value;
+
+            let saveReq: Observable<${className}Model>;
+            if (this.loaded${className}) {
+                formData.id = this.loaded${className}.id;
+                saveReq = this.${variableName}Service.update(this.loaded${className}.id, formData);
+            } else {
+                saveReq = this.${variableName}Service.save(formData);
+            }
+
+            this.processing = true;
+            saveReq.subscribe({
+                next: result => {
+                    this.afterSaveSucceed(result, exit);
+                }, error: () => {
+                    this.processing = false;
+                    if (this.loaded${className})
+                        this.updateView();
+                }
+            });
+
+        } else {
+            this.messageService.add({severity: 'error', summary: 'Le formulaire est invalide'});
+            this.${variableName}Form.markAllAsTouched();
+        }
+    }
+
+    getConfirmMessage(): string {
+        return AppConfig.getMessage(this.loaded${className} ? MessageCode.MSG_CONFIRM_CANCEL_EDIT : MessageCode.MSG_CONFIRM_CANCEL_CREATE, ['de la ${variableName}']);
+    }
+
+    isConfirmNeeded(): boolean {
+        return !this.forceExit && this.${variableName}Form.dirty;
+    }
+
+    private afterSaveSucceed(savedModel: ${className}Model, exit: boolean) {
+        this.processing = false;
+        const successMessage = AppConfig.getMessage(MessageCode.MSG_SAVE, ["La ${variableName}"]);
+
+        if (exit) {
+            this.forceExit = true;
+            this.router.navigate(["/${variableName}s"], {
+                state: {
+                    forwardedMessage: {
+                        severity: 'success',
+                        summary: successMessage,
+                    }
+                }
+            });
+        } else {
+            if (!this.loaded${className})
+                window.history.pushState({}, "", `/${variableName}s/${savedModel.id}`);
+            this.loaded${className} = savedModel;
+            this.messageService.add({severity: 'success', summary: successMessage});
+            this.updateView();
+        }
+    }
+}

@@ -1,0 +1,73 @@
+import {Injectable} from "@angular/core";
+import {Observable} from "rxjs";
+import {HttpClient} from "@angular/common/http";
+import {plainToClass} from "class-transformer";
+import {map, tap} from "rxjs/operators";
+import {${className}Model} from "@services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.model";
+import {environment} from "@env/environment";
+import {ListDto} from "@core/list-dto";
+import {HttpQueryUtils} from "@core/utils/http-query.utils";
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ${className}Service {
+
+    private readonly baseUrl = `${environment.apiPrefixUrl}/${endPointUrl}`;
+
+    protected constructor(protected httpClient: HttpClient) {
+    }
+
+
+    update(id: number, inputData: any) {
+        const url = `${this.baseUrl}/${id}`;
+
+        return this.httpClient.put(url, inputData, environment.httpOptions).pipe(
+                map(response => plainToClass(${className}Model, response)),
+        );
+    }
+
+    save(inputData: any) {
+
+        return this.httpClient.post(this.baseUrl, inputData, environment.httpOptions).pipe(
+                map(response => plainToClass(${className}Model, response)),
+        );
+    }
+
+    read(id: number): Observable<${className}Model> {
+        const url = `${this.baseUrl}/${id}`;
+
+        return this.httpClient.get(url, environment.httpOptions).pipe(
+                map(response => plainToClass(${className}Model, response)),
+        );
+    }
+
+    list(first: number,
+         limit: number,
+         filters?: { [s: string]: any },
+         sortField?: string | string[], sortOrder?: number,
+         customBaseUrl?: string)
+            : Observable<ListDto<${className}Model>> {
+
+        let url = this.baseUrl;
+        if (customBaseUrl)
+            url = customBaseUrl;
+
+        const queryParams = HttpQueryUtils.buildListQueryParams(first, limit, filters, sortField, sortOrder);
+        if (queryParams) url += `?${queryParams}`;
+
+        return this.httpClient.get<ListDto<${className}Model>>(url, environment.httpOptions).pipe(
+                tap(response => response.data = response.data.map(item => plainToClass(${className}Model, item))),
+        );
+    }
+
+    delete(id: number, customBaseUrl?: string): Observable<void> {
+
+        let url = this.baseUrl;
+        if (customBaseUrl)
+            url = customBaseUrl;
+
+        return this.httpClient.delete<void>(`${url}/${id}`, environment.httpOptions);
+    }
+
+}

@@ -1,0 +1,32 @@
+#macro(convertToAngularType $javaType)
+    #set($stringType = "string")
+    #set($numberTypes = ["Integer", "Long", "BigDecimal", "Float", "Double", "float", "double", "int"])
+    #set($dateTypes = ["ZonedDateTime", "Date", "LocalDateTime", "LocalDate"])
+    #set($booleanTypes = ["Boolean", "boolean"])
+    #if($javaType == "String")##
+        $stringType##
+    #elseif($numberTypes.contains($javaType))##
+    number##
+    #elseif($dateTypes.contains($javaType))##
+    Date##
+    #elseif($booleanTypes.contains($javaType))##
+    boolean##
+    #else##
+    null##
+    #end
+#end
+
+import {AbstractModel} from "@core/abstract.model";
+
+export class ${className}Model extends AbstractModel<number> {
+
+    #foreach(${field} in ${fields})
+        #if(${field.getTypeParam().isEmpty()})
+            #set($angularType = "#convertToAngularType(${field.getType()})")
+            ${field.getName()}: ${angularType};
+        #elseif(${field.getTypeParam().size()} == 1)
+            #set($angularType = "#convertToAngularType(${field.getTypeParam().get(0)})")
+            ${field.getName()}: ${angularType}[] = [];
+        #end
+    #end
+}

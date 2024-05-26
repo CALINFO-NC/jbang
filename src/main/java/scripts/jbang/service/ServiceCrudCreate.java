@@ -32,7 +32,7 @@ public class ServiceCrudCreate implements ScriptCallable {
     private String className;
 
     @CommandLine.Option(names = { "--ss-package-fonctionnel" }, paramLabel = "SS_PACKAGE_FONCTIONNEL", description = "Package fonctionnel, par exemple contact")
-    private String ssPkgFonctionnel;
+    private String composant;
 
     @CommandLine.Option(names = { "--tenant" }, paramLabel = "TENANT", description = "Tenant domain/generic")
     private String tenant;
@@ -45,7 +45,7 @@ public class ServiceCrudCreate implements ScriptCallable {
             projectPath = Console.readConsoleValue(this, ServiceCrudCreate.Fields.projectPath, projectPath, Console.DEFAULT);
             projectName = Console.readConsoleValue(this, ServiceCrudCreate.Fields.projectName, projectName, Console.DEFAULT);
             className = Console.readConsoleValue(this, ServiceCrudCreate.Fields.className, className, Console.DEFAULT);
-            ssPkgFonctionnel = Console.readConsoleValue(this, ServiceCrudCreate.Fields.ssPkgFonctionnel, ssPkgFonctionnel, Console.DEFAULT);
+            composant = Console.readConsoleValue(this, ServiceCrudCreate.Fields.composant, composant, Console.DEFAULT);
             tenant = Console.readConsoleValue(this, ServiceCrudCreate.Fields.tenant, tenant, Console.DEFAULT);
         }
 
@@ -53,25 +53,24 @@ public class ServiceCrudCreate implements ScriptCallable {
         ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.projectPath, projectPath);
         ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.projectName, projectName);
         ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.className, className);
-        ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.ssPkgFonctionnel, ssPkgFonctionnel);
+        ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.composant, composant);
         ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.tenant, tenant);
 
-        generateJavaService();
-        generateJavaEntity();
-        generateJavaRepository();
-        generateJavaConverter();
-        generateJavaServiceImpl();
-        generateJavaController();
-        generateAngularModel();
-        generateAngularService();
-        generateAngularListTs();
-        generateAngularListHtml();
-        generateAngularListScss();
-        generateAngularFormTs();
-        generateAngularFormHtml();
-        generateAngularFormScss();
-        generateAngularResolverTs();
+
+        // On charge la bibl velocity
+        VelocityContext velocityContext = new VelocityContext();
+        fillDefaultVelocityContext(velocityContext);
+        File macroFile = new File(projectPath + "/jbang/velocity/macro.vm");
+        if (macroFile.exists()) {
+            String macro = getContentVelocityTemplateFromFile(macroFile);
+            fillVelocityTemplate(macro, velocityContext);
+        }
+
+        // On traite les fichiers
+        generate(new File(projectPath + "/jbang/templates"));
     }
+
+
 
 
     public void generateJavaEntity(){
@@ -79,9 +78,7 @@ public class ServiceCrudCreate implements ScriptCallable {
         VelocityContext velocityContext = new VelocityContext();
         fillDefaultVelocityContext(velocityContext);
 
-        velocityContext.put("classNameHyphens", transformToHyphens(className, "_", false));
-
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${ssPkgFonctionnel}.entity.${tenant}", velocityContext);
+        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.entity.${tenant}", velocityContext);
         velocityContext.put("pkg", pkg);
 
         writeJavaFile(pkg, "Entity", velocityContext);
@@ -92,9 +89,7 @@ public class ServiceCrudCreate implements ScriptCallable {
         VelocityContext velocityContext = new VelocityContext();
         fillDefaultVelocityContext(velocityContext);
 
-        velocityContext.put("classNameUrl", transformToHyphens(className, "-", true));
-
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${ssPkgFonctionnel}.controller", velocityContext);
+        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.controller", velocityContext);
         velocityContext.put("pkg", pkg);
 
         writeJavaFile(pkg, "Controller", velocityContext);
@@ -105,7 +100,7 @@ public class ServiceCrudCreate implements ScriptCallable {
         VelocityContext velocityContext = new VelocityContext();
         fillDefaultVelocityContext(velocityContext);
 
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${ssPkgFonctionnel}.service.impl", velocityContext);
+        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.service.impl", velocityContext);
         velocityContext.put("pkg", pkg);
 
         writeJavaFile(pkg, "ServiceImpl", velocityContext);
@@ -116,7 +111,7 @@ public class ServiceCrudCreate implements ScriptCallable {
         VelocityContext velocityContext = new VelocityContext();
         fillDefaultVelocityContext(velocityContext);
 
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${ssPkgFonctionnel}", velocityContext);
+        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}", velocityContext);
         velocityContext.put("pkg", pkg);
 
         writeJavaFile(pkg, "Service", velocityContext);
@@ -127,7 +122,7 @@ public class ServiceCrudCreate implements ScriptCallable {
         VelocityContext velocityContext = new VelocityContext();
         fillDefaultVelocityContext(velocityContext);
 
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${ssPkgFonctionnel}.repository.${tenant}", velocityContext);
+        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.repository.${tenant}", velocityContext);
         velocityContext.put("pkg", pkg);
 
         writeJavaFile(pkg, "Repository", velocityContext);
@@ -138,7 +133,7 @@ public class ServiceCrudCreate implements ScriptCallable {
         VelocityContext velocityContext = new VelocityContext();
         fillDefaultVelocityContext(velocityContext);
 
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${ssPkgFonctionnel}.converter", velocityContext);
+        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.converter", velocityContext);
         velocityContext.put("pkg", pkg);
 
         writeJavaFile(pkg, "EntityResourceConverter", velocityContext);
@@ -154,12 +149,8 @@ public class ServiceCrudCreate implements ScriptCallable {
 
     public void generateAngularService(){
 
-
-
         VelocityContext velocityContext = new VelocityContext();
         fillDefaultVelocityContext(velocityContext);
-        velocityContext.put("classNameUrl", transformToHyphens(className, "-", true));
-        velocityContext.put("classNameHyphens", transformToHyphens(className, "-", false));
 
         writeAngularFile("service.ts", "services", velocityContext);
 
@@ -170,7 +161,6 @@ public class ServiceCrudCreate implements ScriptCallable {
 
         VelocityContext velocityContext = new VelocityContext();
         fillDefaultVelocityContext(velocityContext);
-        velocityContext.put("classNameHyphens", transformToHyphens(className, "-", false));
 
         writeAngularFile("list.component.ts", "views", velocityContext);
 
@@ -197,7 +187,6 @@ public class ServiceCrudCreate implements ScriptCallable {
 
         VelocityContext velocityContext = new VelocityContext();
         fillDefaultVelocityContext(velocityContext);
-        velocityContext.put("classNameHyphens", transformToHyphens(className, "-", false));
 
         writeAngularFile("form.component.ts", "views", velocityContext);
     }
@@ -226,7 +215,6 @@ public class ServiceCrudCreate implements ScriptCallable {
 
         VelocityContext velocityContext = new VelocityContext();
         fillDefaultVelocityContext(velocityContext);
-        velocityContext.put("classNameHyphens", transformToHyphens(className, "-", false));
 
         writeAngularFile("resolver.ts", "views", velocityContext);
     }
@@ -267,11 +255,14 @@ public class ServiceCrudCreate implements ScriptCallable {
 
     private void fillDefaultVelocityContext(VelocityContext velocityContext){
         velocityContext.put("projectName", projectName);
-        velocityContext.put("ssPkgFonctionnel", ssPkgFonctionnel);
+        velocityContext.put("composant", composant);
         velocityContext.put("className", className);
         velocityContext.put("tenant", tenant);
+        velocityContext.put("entityTableName", transformToHyphens(className, "_"));
+        velocityContext.put("endPointUrl", transformToHyphens(className, "-"));
+        velocityContext.put("classNameHyphens", transformToHyphens(className, "-"));
 
-        String pkgApi = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${ssPkgFonctionnel}", velocityContext);
+        String pkgApi = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}", velocityContext);
         String baseApiPath = getJavaApiPackagePath(pkgApi);
         List<FieldProperty> lst = ClassPropertiesUtils.getFieldsFromJavaClassFile(new File(baseApiPath + "/" + className + "Resource.java"));
         velocityContext.put("fields", lst);
@@ -311,7 +302,7 @@ public class ServiceCrudCreate implements ScriptCallable {
 
         String basePath = getBaseAngularPath();
 
-        String composant = transformToHyphens(className, "-", false);
+        String composant = transformToHyphens(className, "-");
         String sep = ".";
         if (sufficeFile.startsWith("list") || sufficeFile.startsWith("form")){
             sep = "-";
@@ -323,24 +314,52 @@ public class ServiceCrudCreate implements ScriptCallable {
             composant = composant + "-form";
         }
 
-        Path path = Paths.get(basePath + "/" + stereotype + "/" + ssPkgFonctionnel.replace(".", "/") + "/" +  composant + "/" + transformToHyphens(className, "-", false) + sep + sufficeFile);
+        Path path = Paths.get(basePath + "/" + stereotype + "/" + composant.replace(".", "/") + "/" +  composant + "/" + transformToHyphens(className, "-") + sep + sufficeFile);
         writeFile(path, fillVelocityTemplate(getContentVelocityTemplateFromAngularFile(sufficeFile + ".vm"), velocityContext));
     }
 
-    private static String transformToHyphens(String input, String sep, boolean pluriel) {
+    private static String transformToHyphens(String input, String sep) {
         // Step 1: Convert camel case to hyphenated
         String hyphenated = input.replaceAll("([a-z])([A-Z])", String.format("$1%s$2", sep)).toLowerCase();
 
         // Step 2: Split the string to handle pluralization
         String[] parts = hyphenated.split("-");
 
-        String end = pluriel ? "s" : "";
-        // Step 3: Pluralize the first word
-        if (parts.length > 0) {
-            parts[0] = parts[0] + end;
-        }
 
         // Step 4: Join the parts back together
         return String.join("-", parts);
+    }
+
+    private void generate(File path){
+
+        VelocityContext velocityContext = new VelocityContext();
+        fillDefaultVelocityContext(velocityContext);
+
+        Arrays.stream(path.listFiles()).filter(f -> f.getAbsolutePath().toLowerCase().endsWith(".vm") || f.isDirectory()).forEach(vmFile -> {
+
+            if (vmFile.isDirectory()){
+                generate(vmFile);
+            }
+            else {
+                String baseTemplate = projectPath + "/jbang/templates/";
+                String templateDestFileName = vmFile.getAbsolutePath().replace(baseTemplate, projectPath + "/");
+                templateDestFileName = templateDestFileName.substring(0, templateDestFileName.length() - 3);    // On supprimer le .vm à la fin
+                String destFullFileName = fillVelocityTemplate(templateDestFileName, velocityContext);
+                File destFullFile = new File(destFullFileName);
+
+                // On recherche le nom de package
+                int index = destFullFileName.indexOf("/src/main/java");
+                if (index > 0) {
+                    String pkg = destFullFileName.substring("/src/main/java/".length() + index);
+                    String fileName = destFullFile.getName();
+                    pkg = pkg.substring(0, pkg.length() - fileName.length() - 1);
+                    velocityContext.put("pkg", pkg.replace(File.separator, "."));
+                }
+
+
+                Path destFile = Paths.get(destFullFileName);
+                writeFile(destFile, fillVelocityTemplate(getContentVelocityTemplateFromFile(vmFile), velocityContext));
+            }
+        });
     }
 }

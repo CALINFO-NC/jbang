@@ -1,0 +1,93 @@
+#set($variable = ${className})
+#set($firstLetter = ${variable.substring(0, 1).toLowerCase()})
+#set($restOfString = ${variable.substring(1)})
+#set($variableName = "${firstLetter}${restOfString}")
+
+<h3><i class="fa-solid fa-clipboard-question"></i> Votre ${className}</h3>
+<p-table #dt (onLazyLoad)="loadData($event)" (onRowSelect)="goTo${className}($event.data); dt.selection = null"
+        (onStateRestore)="handleStateRestore($event)"
+        [filterDelay]="200" [lazy]="true" [loading]="loading" [paginator]="true"
+        [rowsPerPageOptions]="[5,10,20,50]"
+        [rows]="defaultRowsPerPage" [showCurrentPageReport]="true" [sortOrder]="1" [totalRecords]="totalRecords"
+        [value]="data" currentPageReportTemplate="Affichage des lignes {first} à {last} sur {totalRecords}"
+        dataKey="id"
+        selectionMode="single" sortField="question"
+        sortMode="single"
+        stateKey="${variableName}list-state" stateStorage="session" styleClass="p-datatable-striped p-datatable-responsive">
+<ng-template pTemplate="caption">
+    <div class="flex justify-content-start">
+                        <span class="p-input-icon-left">
+                          <i class="pi pi-search"></i>
+                            <input #globalSearch (input)="dt.filterGlobal($event.target.value, undefined)" pInputText
+                                   placeholder="Recherche textuelle..."
+                                   type="text"/>
+                          </span>
+        <p-button (onClick)="clearFilters(dt)" icon="pi pi-filter-slash" label="Vider les filtres"
+                  styleClass="mx-1 p-button-outlined"></p-button>
+        <div class="ml-auto"></div>
+
+        <p-button [preserveFragment]="true" icon="pi pi-plus" label="Créer une question" routerLink="./new"
+                  styleClass="mr-1"></p-button>
+    </div>
+</ng-template>
+
+<ng-template pTemplate="header">
+    <tr>
+        #foreach(${field} in ${fields})
+            #if(${field.getTypeParam().isEmpty()})
+
+                #set($variable = ${field.getName()})
+                #set($firstLetter = ${variable.substring(0, 1).toUpperCase()})
+                #set($restOfString = ${variable.substring(1)})
+                #set($label = "${firstLetter}${restOfString}")
+
+                #set($angularHtmlType = "#convertToAngularHtmlType(${field.getType()})")
+                #set($angularMatcherType = "#convertToAngularMatcherType(${field.getType()})")
+
+                <th pSortableColumn="${field.getName()}">
+                    <div class="flex justify-content-between align-items-center">
+                        ${label}
+                        <p-sortIcon field="${field.getName()}"></p-sortIcon>
+                        <p-columnFilter [matchModeOptions]="TableFilterHelper.getDefaultMatchModesFor${angularMatcherType}()"
+                                        class="ml-auto" display="menu"
+                                        field="${field.getName()}"
+                                        type="${angularHtmlType}"></p-columnFilter>
+                    </div>
+                </th>
+            #end
+        #end
+        <th style="width: 3rem"></th>
+    </tr>
+</ng-template>
+<ng-template let-${variableName} pTemplate="body">
+    <tr [pSelectableRow]="${variableName}">
+
+        #foreach(${field} in ${fields})
+            #if(${field.getTypeParam().isEmpty()})
+
+                #set($variable = ${field.getName()})
+                #set($firstLetter = ${variable.substring(0, 1).toUpperCase()})
+                #set($restOfString = ${variable.substring(1)})
+                #set($label = "${firstLetter}${restOfString}")
+
+                <td>
+                    <span class="p-column-title">${label}</span>
+                    {{ ${variableName}.${field.getName()} }}
+                </td>
+            #end
+        #end
+
+
+        <td>
+            <div class="button-action-column button-action-column-xs">
+                <button (click)="onDelete($event, ${variableName})" appendTo="body" icon="fa-solid fa-trash-can"
+                        pTooltip="Supprimer" class="p-button-danger"
+                        tooltipPosition="bottom" pButton></button>
+            </div>
+
+        </td>
+    </tr>
+</ng-template>
+
+</p-table>
+<p-menu #menu [popup]="true"></p-menu>

@@ -1,0 +1,45 @@
+#set($variable = ${className})
+#set($firstLetter = ${variable.substring(0, 1).toLowerCase()})
+#set($restOfString = ${variable.substring(1)})
+#set($variableName = "${firstLetter}${restOfString}")
+
+<form [formGroup]="${variableName}Form">
+
+
+    <div class="flex mb-2 justify-content-between">
+        <div class="flex">
+            <p-button (onClick)="goBack($event)" class="mr-1" icon="pi pi-angle-left" label="Retour à la liste"
+                      styleClass="p-button-outlined p-button-secondary responsive-button-priority-1"></p-button>
+            <p-button (onClick)="save()" [disabled]="processing" class="mr-1" icon="pi pi-save" label="Enregistrer"
+                      styleClass="responsive-button-priority-3"></p-button>
+            <p-button (onClick)="save(true)" [disabled]="processing" class="mr-1" icon="fas fa-door-open"
+                      label="Enregistrer et fermer"></p-button>
+        </div>
+
+    </div>
+
+    <div class="card p-fluid">
+        <div class="field grid">
+            #foreach(${field} in ${fields})
+                #if(${field.getTypeParam().isEmpty()})
+
+                    #set($variable = ${field.getName()})
+                    #set($firstLetter = ${variable.substring(0, 1).toUpperCase()})
+                    #set($restOfString = ${variable.substring(1)})
+                    #set($label = "${firstLetter}${restOfString}")
+
+                    #set($angularHtmlType = "#convertToAngularHtmlType(${field.getType()})")
+
+                    <label class="col-12 md:col-2 required" for="${field.getName()}">${label}</label>
+                    <div class="col-12">
+                        <input formControlName="${field.getName()}" id="${field.getName()}" pInputText type="${angularHtmlType}">
+                        <div *ngIf="${field.getName()}Control.invalid && ${field.getName()}Control.touched">
+                            <small *ngIf="${field.getName()}Control.errors?.required" class="text-danger">{{ ERR_CHAMP_OBLIGATOIRE }}</small>
+                        </div>
+                    </div>
+                #end
+            #end
+        </div>
+    </div>
+
+</form>
