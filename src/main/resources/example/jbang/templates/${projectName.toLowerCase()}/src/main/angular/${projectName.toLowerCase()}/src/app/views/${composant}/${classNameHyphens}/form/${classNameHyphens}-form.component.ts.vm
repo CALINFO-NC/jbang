@@ -10,8 +10,8 @@ import {Observable} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ConfirmBeforeDeactivateComponent} from "@core/confirm-before-deactivate-guard";
 import {ConfirmationService, MessageService} from "primeng/api";
-import {${className}Service} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.service";
-import {${className}Model} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.model";
+import {${className}Service} from "@services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.service";
+import {${className}Model} from "@services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.model";
 
 @Component({
     selector: 'app-${classNameHyphens}-form',

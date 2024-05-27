@@ -6,8 +6,8 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot} from '@angular/router';
 import {from, Observable} from "rxjs";
-import {${className}Service} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.service";
-import {${className}Model} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.model";
+import {${className}Service} from "@services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.service";
+import {${className}Model} from "@services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.model";
 
 @Injectable({
 providedIn: 'any'

@@ -9,8 +9,8 @@ import {AppConfig} from "@app/app.config";
 import {ConfirmationService, MessageService, TableState} from "primeng/api";
 import {TableFilterHelper} from "@core/utils/table-filter.helper";
 import {ActivatedRoute, Router} from "@angular/router";
-import {${className}Service} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.service";
-import {${className}Model} from "@app/services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.model";
+import {${className}Service} from "@services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.service";
+import {${className}Model} from "@services/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.model";
 
 @Component({
     selector: 'app-${classNameHyphens}-list',

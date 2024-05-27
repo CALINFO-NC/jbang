@@ -4,25 +4,25 @@
 #set($variableName = "${firstLetter}${restOfString}")
 
 import {Routes} from '@angular/router';
-import {AuthGuard} from "@app/services/security/auth-guard";
-import {${className}ListComponent} from "@app/views/${composant.replace(".", "/")}/${classNameHyphens}/list/${classNameHyphens}-list.component";
-import {ConfirmBeforeDeactivateGuard} from "@app/services/security/confirm-before-deactivate-guard";
-import {${className}FormComponent} from "@app/views/${composant.replace(".", "/")}/${classNameHyphens}/form/${classNameHyphens}-form.component";
-import {${className}Resolver} from "@app/views/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.resolver";
+import {AuthGuard} from "@services/security/auth-guard";
+import {${className}ListComponent} from "@views/${composant.replace(".", "/")}/${classNameHyphens}/list/${classNameHyphens}-list.component";
+import {ConfirmBeforeDeactivateGuard} from "@core/confirm-before-deactivate-guard";
+import {${className}FormComponent} from "@views/${composant.replace(".", "/")}/${classNameHyphens}/form/${classNameHyphens}-form.component";
+import {${className}Resolver} from "@views/${composant.replace(".", "/")}/${classNameHyphens}/${classNameHyphens}.resolver";
 
-const routes: Routes = [
+export const ${variableName}Routes: Routes = [
     {
-        path: '', component: ${className}ListComponent,
+        path: '${variableName}', component: ${className}ListComponent,
         canActivate: [AuthGuard],
     },
     {
-        path: 'new', component: ${className}FormComponent,
+        path: '${variableName}/new', component: ${className}FormComponent,
         data: {breadcrumb: 'Nouveau'},
         canActivate: [AuthGuard],
         canDeactivate: [ConfirmBeforeDeactivateGuard]
     },
     {
-        path: ':${variableName}Id',
+        path: '${variableName}/:${variableName}Id',
         data: {breadcrumb: 'Détail'},
         component: ${className}FormComponent,
         resolve: {${variableName}: ${className}Resolver},
