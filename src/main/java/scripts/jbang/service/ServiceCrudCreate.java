@@ -31,7 +31,10 @@ public class ServiceCrudCreate implements ScriptCallable {
     @CommandLine.Option(names = { "--class-name" }, paramLabel = "CLASS_NAME", description = "Nom de la classe sans le stéréotype. Par exemple Contact et non ContactResource")
     private String className;
 
-    @CommandLine.Option(names = { "--ss-package-fonctionnel" }, paramLabel = "SS_PACKAGE_FONCTIONNEL", description = "Package fonctionnel, par exemple contact")
+    @CommandLine.Option(names = { "--plurial-class-name" }, paramLabel = "PLURIAL_CLASS_NAME", description = "Nom de la classe sans le stéréotype et au pluriel. Par exemple Contacts et non ContactsResource")
+    private String plurialClassName;
+
+    @CommandLine.Option(names = { "--composant" }, paramLabel = "COMPOSANT", description = "Package fonctionnel, par exemple contact. (optionnel)")
     private String composant;
 
     @CommandLine.Option(names = { "--tenant" }, paramLabel = "TENANT", description = "Tenant domain/generic")
@@ -40,11 +43,16 @@ public class ServiceCrudCreate implements ScriptCallable {
     @Override
     public void callScript() throws Exception {
 
+        if (plurialClassName == null){
+            plurialClassName = className + "s";
+        }
+
         if (ScriptCommand.getInstance().isInteractiveMode()) {
 
             projectPath = Console.readConsoleValue(this, ServiceCrudCreate.Fields.projectPath, projectPath, Console.DEFAULT);
             projectName = Console.readConsoleValue(this, ServiceCrudCreate.Fields.projectName, projectName, Console.DEFAULT);
             className = Console.readConsoleValue(this, ServiceCrudCreate.Fields.className, className, Console.DEFAULT);
+            plurialClassName = Console.readConsoleValue(this, ServiceCrudCreate.Fields.plurialClassName, plurialClassName, Console.DEFAULT);
             composant = Console.readConsoleValue(this, ServiceCrudCreate.Fields.composant, composant, Console.DEFAULT);
             tenant = Console.readConsoleValue(this, ServiceCrudCreate.Fields.tenant, tenant, Console.DEFAULT);
         }
@@ -53,6 +61,7 @@ public class ServiceCrudCreate implements ScriptCallable {
         ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.projectPath, projectPath);
         ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.projectName, projectName);
         ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.className, className);
+        ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.plurialClassName, plurialClassName);
         ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.composant, composant);
         ScriptCommand.getInstance().completePrintedCommand(this, ServiceCrudCreate.Fields.tenant, tenant);
 
@@ -71,153 +80,6 @@ public class ServiceCrudCreate implements ScriptCallable {
     }
 
 
-
-
-    public void generateJavaEntity(){
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.entity.${tenant}", velocityContext);
-        velocityContext.put("pkg", pkg);
-
-        writeJavaFile(pkg, "Entity", velocityContext);
-    }
-
-    public void generateJavaController(){
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.controller", velocityContext);
-        velocityContext.put("pkg", pkg);
-
-        writeJavaFile(pkg, "Controller", velocityContext);
-    }
-
-    public void generateJavaServiceImpl(){
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.service.impl", velocityContext);
-        velocityContext.put("pkg", pkg);
-
-        writeJavaFile(pkg, "ServiceImpl", velocityContext);
-    }
-
-    public void generateJavaService(){
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}", velocityContext);
-        velocityContext.put("pkg", pkg);
-
-        writeJavaFile(pkg, "Service", velocityContext);
-    }
-
-    public void generateJavaRepository(){
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.repository.${tenant}", velocityContext);
-        velocityContext.put("pkg", pkg);
-
-        writeJavaFile(pkg, "Repository", velocityContext);
-    }
-
-    public void generateJavaConverter(){
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        String pkg = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}.converter", velocityContext);
-        velocityContext.put("pkg", pkg);
-
-        writeJavaFile(pkg, "EntityResourceConverter", velocityContext);
-    }
-
-    public void generateAngularModel(){
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        writeAngularFile("model.ts", "services", velocityContext);
-    }
-
-    public void generateAngularService(){
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        writeAngularFile("service.ts", "services", velocityContext);
-
-    }
-
-    public void generateAngularListTs(){
-
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        writeAngularFile("list.component.ts", "views", velocityContext);
-
-    }
-
-    public void generateAngularListHtml(){
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        writeAngularFile("list.component.html", "views", velocityContext);
-    }
-
-    public void generateAngularListScss(){
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        writeAngularFile("list.component.scss", "views", velocityContext);
-    }
-
-    public void generateAngularFormTs(){
-
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        writeAngularFile("form.component.ts", "views", velocityContext);
-    }
-
-    public void generateAngularFormHtml(){
-
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        writeAngularFile("form.component.html", "views", velocityContext);
-
-    }
-
-    public void generateAngularFormScss(){
-
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        writeAngularFile("form.component.scss", "views", velocityContext);
-    }
-
-    public void generateAngularResolverTs(){
-
-
-        VelocityContext velocityContext = new VelocityContext();
-        fillDefaultVelocityContext(velocityContext);
-
-        writeAngularFile("resolver.ts", "views", velocityContext);
-    }
 
     @SneakyThrows
     private String fillVelocityTemplate(String template, VelocityContext context){
@@ -258,8 +120,9 @@ public class ServiceCrudCreate implements ScriptCallable {
         velocityContext.put("composant", composant);
         velocityContext.put("className", className);
         velocityContext.put("tenant", tenant);
+        velocityContext.put("plurialClassName", plurialClassName);
         velocityContext.put("entityTableName", transformToHyphens(className, "_"));
-        velocityContext.put("endPointUrl", transformToHyphens(className, "-"));
+        velocityContext.put("endPointUrl", transformToHyphens(plurialClassName, "-"));
         velocityContext.put("classNameHyphens", transformToHyphens(className, "-"));
 
         String pkgApi = fillVelocityTemplate("com.calinfo.api.${projectName.toLowerCase()}.metier.${composant}", velocityContext);
@@ -347,18 +210,20 @@ public class ServiceCrudCreate implements ScriptCallable {
                 String destFullFileName = fillVelocityTemplate(templateDestFileName, velocityContext);
                 File destFullFile = new File(destFullFileName);
 
-                // On recherche le nom de package
-                int index = destFullFileName.indexOf("/src/main/java");
-                if (index > 0) {
-                    String pkg = destFullFileName.substring("/src/main/java/".length() + index);
-                    String fileName = destFullFile.getName();
-                    pkg = pkg.substring(0, pkg.length() - fileName.length() - 1);
-                    velocityContext.put("pkg", pkg.replace(File.separator, "."));
+                if (!destFullFile.exists()) {
+
+                    // On recherche le nom de package
+                    int index = destFullFileName.indexOf("/src/main/java");
+                    if (index > 0) {
+                        String pkg = destFullFileName.substring("/src/main/java/".length() + index);
+                        String fileName = destFullFile.getName();
+                        pkg = pkg.substring(0, pkg.length() - fileName.length() - 1);
+                        velocityContext.put("pkg", pkg.replace(File.separator, "."));
+                    }
+
+                    Path destFile = Paths.get(destFullFileName);
+                    writeFile(destFile, fillVelocityTemplate(getContentVelocityTemplateFromFile(vmFile), velocityContext));
                 }
-
-
-                Path destFile = Paths.get(destFullFileName);
-                writeFile(destFile, fillVelocityTemplate(getContentVelocityTemplateFromFile(vmFile), velocityContext));
             }
         });
     }
