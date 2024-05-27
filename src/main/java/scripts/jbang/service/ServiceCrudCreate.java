@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @FieldNameConstants
-@CommandLine.Command(name = "service-crud-create", mixinStandardHelpOptions = true, version = "1.0.0", description = "Cette commande va créer le crud associé à une entité")
+@CommandLine.Command(name = "service-crud-create", mixinStandardHelpOptions = true, version = "1.0.0", description = "Cette commande va créer le crud et l'IHM associés à une ressource")
 public class ServiceCrudCreate implements ScriptCallable {
 
     @CommandLine.Option(names = { "--project-path" }, paramLabel = "PROJECT_PATH", description = "Chemin du fichier")
