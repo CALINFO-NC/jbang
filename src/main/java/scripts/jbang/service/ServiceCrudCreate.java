@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldNameConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import picocli.CommandLine;
@@ -120,6 +121,7 @@ public class ServiceCrudCreate implements ScriptCallable {
         velocityContext.put("composant", composant);
         velocityContext.put("className", className);
         velocityContext.put("tenant", tenant);
+        velocityContext.put("tenantCapitalize", WordUtils.capitalize(tenant));
         velocityContext.put("plurialClassName", plurialClassName);
         velocityContext.put("entityTableName", transformToHyphens(className, "_"));
         velocityContext.put("endPointUrl", transformToHyphens(plurialClassName, "-"));
