@@ -1,6 +1,6 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 
-//DEPS org.projectlombok:lombok:1.18.24
+//DEPS org.projectlombok:lombok:1.18.32
 //DEPS org.apache.commons:commons-lang3:3.12.0
 //DEPS org.reflections:reflections:0.10.2
 //DEPS info.picocli:picocli:4.7.0
